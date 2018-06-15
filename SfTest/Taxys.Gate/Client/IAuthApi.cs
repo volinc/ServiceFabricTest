@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Taxys.Gate.Client
 {
-    public interface IAuthValuesApi
+    public interface IAuthApi
     {
-        Task<HttpResponseMessage> GetValue(int id);
+        Task<HttpResponseMessage> GetValueAsync(int valueId);
     }
 }

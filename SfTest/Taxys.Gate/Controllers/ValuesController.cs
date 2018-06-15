@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Fabric;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
-using Microsoft.ServiceFabric.Services.Communication.Client;
 using Newtonsoft.Json.Linq;
+using Taxys.Gate.Client;
 
 namespace Taxys.Gate.Controllers
 {
@@ -15,10 +14,12 @@ namespace Taxys.Gate.Controllers
     public class ValuesController : Controller
     {
         private readonly HttpClient httpClient;
+        private readonly AuthValuesRemoteController authValuesRemoteController;
 
-        public ValuesController(HttpClient httpClient)
+        public ValuesController(HttpClient httpClient, AuthValuesRemoteController authValuesRemoteController)
         {
             this.httpClient = httpClient;
+            this.authValuesRemoteController = authValuesRemoteController;
         }
 
         // GET api/values
@@ -44,13 +45,7 @@ namespace Taxys.Gate.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            var resolver = ServicePartitionResolver.GetDefault();
-            var cancellationToken = CancellationToken.None;
-            var serviceUri = new Uri("fabric:/SfTest/Taxys.Auth");
-            var partition = resolver.ResolveAsync(serviceUri, new ServicePartitionKey(), cancellationToken);
-                        
-
-            return "value";
+            return authValuesRemoteController.GetValueAsync(id).Result;
         }
 
         // POST api/values

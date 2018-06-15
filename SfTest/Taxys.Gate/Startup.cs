@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Communication.Client;
+using Taxys.Gate.Client;
 
 namespace Taxys.Gate
 {
@@ -26,6 +30,17 @@ namespace Taxys.Gate
         {
             services.AddMvc();                       
             services.AddSingleton<HttpClient>();
+
+            services.AddSingleton(new Uri("fabric:/SfTest/Taxys.Auth"));
+            services.AddSingleton<FabricClient>();
+
+            services.AddSingleton<ICommunicationClientFactory<CommunicationClient<IAuthApi>>>(
+            serviceProvider => new AuthCommunicationClientFactory(
+                new ServicePartitionResolver(() => serviceProvider.GetService<FabricClient>())));
+
+            services.AddSingleton<IPartitionClientFactory<CommunicationClient<IAuthApi>>, AuthPartitionClientFactory>();
+
+            services.AddScoped<AuthValuesRemoteController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

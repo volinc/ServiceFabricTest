@@ -6,25 +6,25 @@ namespace Taxys.Gate.Client
 {
     public class AuthValuesRemoteController
     {
-        private readonly IPartitionClientFactory<CommunicationClient<IAuthValuesApi>> factory;
+        private readonly IPartitionClientFactory<CommunicationClient<IAuthApi>> factory;
 
-        public AuthValuesRemoteController(IPartitionClientFactory<CommunicationClient<IAuthValuesApi>> factory)
+        public AuthValuesRemoteController(IPartitionClientFactory<CommunicationClient<IAuthApi>> factory)
         {
             this.factory = factory;
         }
 
-        public async Task<string> GetValueAsync(int id)
+        public async Task<string> GetValueAsync(int valueId)
         {
             var result = await factory.CreatePartitionClient()
             .InvokeWithRetryAsync(async client =>
             {
                 var api = await client.CreateApiClient();
-                return await api.GetValue(id);
+                return await api.GetValueAsync(valueId);
             });
 
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
-                throw new InvalidOperationException($"Not found {id}");
+                throw new InvalidOperationException($"Not found {valueId}");
             }
 
             return await result.Content.ReadAsStringAsync();
