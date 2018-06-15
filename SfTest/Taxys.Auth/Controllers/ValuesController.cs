@@ -17,7 +17,7 @@ namespace Taxys.Auth.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            return "value1";
         }
 
         // POST api/values

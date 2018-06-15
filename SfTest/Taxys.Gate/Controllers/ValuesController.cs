@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Communication.Client;
 using Newtonsoft.Json.Linq;
 
 namespace Taxys.Gate.Controllers
@@ -23,9 +24,9 @@ namespace Taxys.Gate.Controllers
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
-        {          
-            var cancellationToken = CancellationToken.None;            
+        {                      
             var resolver = ServicePartitionResolver.GetDefault();
+            var cancellationToken = CancellationToken.None;            
             var serviceUri = new Uri("fabric:/SfTest/Taxys.Auth");
             var partition = resolver.ResolveAsync(serviceUri, new ServicePartitionKey(), cancellationToken).Result;    
             var endpoint = partition.GetEndpoint();
@@ -43,6 +44,12 @@ namespace Taxys.Gate.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+            var resolver = ServicePartitionResolver.GetDefault();
+            var cancellationToken = CancellationToken.None;
+            var serviceUri = new Uri("fabric:/SfTest/Taxys.Auth");
+            var partition = resolver.ResolveAsync(serviceUri, new ServicePartitionKey(), cancellationToken);
+                        
+
             return "value";
         }
 
