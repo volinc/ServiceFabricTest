@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Fabric;
-using System.Linq;
+﻿using System.Fabric;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.ServiceFabric.Services.Client;
-using Microsoft.ServiceFabric.Services.Communication.Client;
-using Taxys.Gate.Client;
 
 namespace Taxys.Gate
 {
@@ -28,19 +20,13 @@ namespace Taxys.Gate
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();                       
-            services.AddSingleton<HttpClient>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);   
+            
+            var httpClient = new HttpClient();
+            services.AddSingleton(httpClient);
 
-            services.AddSingleton(new Uri("fabric:/SfTest/Taxys.Auth"));
-            services.AddSingleton<FabricClient>();
-
-            services.AddSingleton<ICommunicationClientFactory<CommunicationClient<IAuthApi>>>(
-            serviceProvider => new AuthCommunicationClientFactory(
-                new ServicePartitionResolver(() => serviceProvider.GetService<FabricClient>())));
-
-            services.AddSingleton<IPartitionClientFactory<CommunicationClient<IAuthApi>>, AuthPartitionClientFactory>();
-
-            services.AddScoped<AuthValuesRemoteController>();
+            var fabricClient = new FabricClient();
+            services.AddSingleton(fabricClient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

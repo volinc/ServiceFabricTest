@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Taxys.Auth.Controllers
@@ -6,18 +8,34 @@ namespace Taxys.Auth.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private static ConcurrentDictionary<int, string> Dataset;
+
+        public ValuesController()
+        {
+            if (Dataset == null)
+            {
+                Dataset = new ConcurrentDictionary<int, string>(new Dictionary<int, string>
+                {
+                    { 1, "auth1" },
+                    { 2, "auth2" }
+                });
+            }
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Dataset.Values;
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{valueId}")]
+        public Task<string> GetAsync(int valueId)
         {
-            return "value1";
+            var value = Dataset[valueId];
+
+            return Task.FromResult(value);
         }
 
         // POST api/values

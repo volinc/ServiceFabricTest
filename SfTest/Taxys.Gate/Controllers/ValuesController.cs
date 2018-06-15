@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
 using Newtonsoft.Json.Linq;
-using Taxys.Gate.Client;
 
 namespace Taxys.Gate.Controllers
 {
@@ -14,12 +15,17 @@ namespace Taxys.Gate.Controllers
     public class ValuesController : Controller
     {
         private readonly HttpClient httpClient;
-        private readonly AuthValuesRemoteController authValuesRemoteController;
+        private readonly StatelessServiceContext serviceContext;
+        private readonly FabricClient fabricClient;
+        private readonly string reverseProxyBaseUri;
 
-        public ValuesController(HttpClient httpClient, AuthValuesRemoteController authValuesRemoteController)
+        public ValuesController(HttpClient httpClient, StatelessServiceContext serviceContext, FabricClient fabricClient)
         {
             this.httpClient = httpClient;
-            this.authValuesRemoteController = authValuesRemoteController;
+            this.serviceContext = serviceContext;
+            this.fabricClient = fabricClient;
+
+            reverseProxyBaseUri = "http://localhost:19081"; // default value for local cluster
         }
 
         // GET api/values
@@ -42,11 +48,24 @@ namespace Taxys.Gate.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{valueId}")]
+        public async Task<string> GetAsync(int valueId)
         {
-            return authValuesRemoteController.GetValueAsync(id).Result;
+            var serviceName = GetAuthServiceName();
+            var proxyAddress = GetProxyAddress(serviceName);
+ 
+            var proxyUrl = $"{proxyAddress}/api/values/{valueId}";
+            var httpResponse = await httpClient.GetAsync(proxyUrl);
+            
+            var content = await httpResponse.Content.ReadAsStringAsync();
+            return content;
         }
+
+        private Uri GetAuthServiceName() =>
+            new Uri($"{serviceContext.CodePackageActivationContext.ApplicationName}/Taxys.Auth");
+
+        private Uri GetProxyAddress(Uri serviceName) => 
+            new Uri($"{reverseProxyBaseUri}{serviceName.AbsolutePath}");
 
         // POST api/values
         [HttpPost]
