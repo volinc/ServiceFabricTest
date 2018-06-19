@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Taxys.Auth.Models;
 
 namespace Taxys.Auth.Controllers
 {
@@ -36,11 +37,11 @@ namespace Taxys.Auth.Controllers
 
         // GET api/values/5
         [HttpGet("{valueId}")]
-        public Task<string> GetAsync(int valueId)
+        public Task<IdValue> GetAsync(int valueId)
         {
             var value = Dataset[valueId];
 
-            return Task.FromResult(value);
+            return Task.FromResult(new IdValue { Id = valueId, Value = value });
         }
 
         // POST api/values

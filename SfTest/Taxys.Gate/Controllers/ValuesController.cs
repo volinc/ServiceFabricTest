@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Binateq.JsonRestClient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Taxys.Gate.Remotes;
 
 namespace Taxys.Gate.Controllers
 {
@@ -56,18 +58,29 @@ namespace Taxys.Gate.Controllers
         public async Task<string> GetAsync(int valueId)
         {
             var serviceName = GetServiceName("Taxys.Auth/");
-            var proxyAddress = GetProxyAddress(serviceName);
- 
-            //var proxyUrl = $"{proxyAddress}/api/values/{valueId}";            
-            //if (serviceName.AbsoluteUri.EndsWith("Dispatcher"))
-            //    proxyUrl += "?PartitionKey=1&PartitionKind=Int64Range";
-
-            //var httpResponse = await httpClient.GetAsync(proxyUrl);                                    
-            //var content = await httpResponse.Content.ReadAsStringAsync();
+            var proxyAddress = GetProxyAddress(serviceName);            
 
             var client = new JsonRestClient(httpClient, proxyAddress);
-            var content = await client.GetAsync<string>($"api/values/{valueId}");
-            return content;
+            var content = await client.GetAsync<IdValue>($"api/values/{valueId}");
+            return content.Value;
+        }
+
+        [HttpGet("{valueId}/low-level")]
+        public async Task<string> GetLowLevelAsync(int valueId)
+        {
+            var serviceName = GetServiceName("Taxys.Auth/");
+            var proxyAddress = GetProxyAddress(serviceName);
+
+            var proxyUrl = $"{proxyAddress}/api/values/{valueId}";
+            if (serviceName.AbsoluteUri.EndsWith("Dispatcher"))
+                proxyUrl += "?PartitionKey=1&PartitionKind=Int64Range";
+
+            var httpResponse = await httpClient.GetAsync(proxyUrl);
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<IdValue>(content);
+
+            return result.Value;
         }
         
         // POST api/values
