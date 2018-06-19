@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +10,7 @@ namespace Taxys.Auth.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private static int maxKey;
         private static ConcurrentDictionary<int, string> Dataset;
 
         public ValuesController()
@@ -19,6 +22,8 @@ namespace Taxys.Auth.Controllers
                     { 1, "auth1" },
                     { 2, "auth2" }
                 });
+
+                maxKey = Dataset.Keys.Max();
             }
         }
 
@@ -40,14 +45,21 @@ namespace Taxys.Auth.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<string> PostAsync([FromBody]string value)
         {
+            var key = Interlocked.Increment(ref maxKey);
+
+            while (!Dataset.TryAdd(key, value))
+                await Task.Delay(1000);
+            
+            return value;
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public Task<string> PutAsync(int valueId, [FromBody]string value)
         {
+            return Task.FromResult(Dataset.GetOrAdd(valueId, value));
         }
 
         // DELETE api/values/5

@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0" />
+    <PackageReference Include="Binateq.JsonRestClient" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
     <PackageReference Include="Microsoft.ServiceFabric" Version="6.2.283" />
     <PackageReference Include="Microsoft.ServiceFabric.AspNetCore.Kestrel" Version="3.1.283" />
     <PackageReference Include="Microsoft.ServiceFabric.Data" Version="3.1.283" />
