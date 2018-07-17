@@ -29,12 +29,12 @@
     <None Include="Scripts\Deploy-FabricApplication.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Taxys.Auth\Taxys.Auth.csproj" />
     <ProjectReference Include="..\Taxys.Dispatcher\Taxys.Dispatcher.csproj" />
     <ProjectReference Include="..\Taxys.Gate\Taxys.Gate.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
