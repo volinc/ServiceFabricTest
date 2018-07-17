@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binateq.JsonRestClient;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Services.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,14 +20,14 @@ namespace Taxys.Gate.Controllers
     {
         private readonly HttpClient httpClient;
         private readonly StatelessServiceContext serviceContext;
-        private readonly FabricClient fabricClient;
+        private readonly ILogger<ValuesController> logger;
         private readonly string reverseProxyBaseUri;
 
-        public ValuesController(HttpClient httpClient, StatelessServiceContext serviceContext, FabricClient fabricClient)
+        public ValuesController(HttpClient httpClient, StatelessServiceContext serviceContext, FabricClient fabricClient, ILogger<ValuesController> logger)
         {
             this.httpClient = httpClient;
             this.serviceContext = serviceContext;
-            this.fabricClient = fabricClient;
+            this.logger = logger;
 
             reverseProxyBaseUri = "http://localhost:19081"; // default value for local cluster
         }
@@ -34,7 +35,14 @@ namespace Taxys.Gate.Controllers
         // GET api/values
         [HttpGet]
         public async Task<IEnumerable<string>> GetAsync()
-        {                      
+        {           
+            logger.LogTrace("1 Getting all values");
+            logger.LogDebug("2 Getting all values");
+            logger.LogInformation("3 Getting all values");
+            logger.LogWarning("4 Getting all values");
+            logger.LogError("5 Getting all values");
+            logger.LogCritical("6 Getting all values");
+
             var resolver = ServicePartitionResolver.GetDefault();
             var cancellationToken = CancellationToken.None;                        
             var partition = await resolver.ResolveAsync(new Uri("fabric:/SfTest/Taxys.Auth"), new ServicePartitionKey(), cancellationToken);   
@@ -48,7 +56,7 @@ namespace Taxys.Gate.Controllers
 
             var client = new JsonRestClient(httpClient, new Uri(address));
 
-            var content = await client.GetAsync<string[]>($"api/values");
+            var content = await client.GetAsync<string[]>($"api/values", cancellationToken);
                         
             return content;
         }
