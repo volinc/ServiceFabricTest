@@ -1,9 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Taxys.Auth.Models;
 
 namespace Taxys.Auth.Controllers
@@ -11,20 +13,22 @@ namespace Taxys.Auth.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private static int maxKey;
-        private static ConcurrentDictionary<int, string> Dataset;
+        private readonly ILogger<ValuesController> logger;
+        private static int _maxKey;
+        private static ConcurrentDictionary<int, string> _dataset;
 
-        public ValuesController()
+        public ValuesController(ILogger<ValuesController> logger)
         {
-            if (Dataset == null)
+            this.logger = logger;
+            if (_dataset == null)
             {
-                Dataset = new ConcurrentDictionary<int, string>(new Dictionary<int, string>
+                _dataset = new ConcurrentDictionary<int, string>(new Dictionary<int, string>
                 {
                     { 1, "auth1" },
                     { 2, "auth2" }
                 });
 
-                maxKey = Dataset.Keys.Max();
+                _maxKey = _dataset.Keys.Max();
             }
         }
 
@@ -32,14 +36,16 @@ namespace Taxys.Auth.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return Dataset.Values;
+            return _dataset.Values;
         }
 
         // GET api/values/5
         [HttpGet("{valueId}")]
         public Task<IdValue> GetAsync(int valueId)
         {
-            var value = Dataset[valueId];
+            logger.LogError(new NotImplementedException("BlaBla"), "blabla");
+
+            var value = _dataset[valueId];
 
             return Task.FromResult(new IdValue { Id = valueId, Value = value });
         }
@@ -48,9 +54,9 @@ namespace Taxys.Auth.Controllers
         [HttpPost]
         public async Task<string> PostAsync([FromBody]string value)
         {
-            var key = Interlocked.Increment(ref maxKey);
+            var key = Interlocked.Increment(ref _maxKey);
 
-            while (!Dataset.TryAdd(key, value))
+            while (!_dataset.TryAdd(key, value))
                 await Task.Delay(1000);
             
             return value;
@@ -60,7 +66,7 @@ namespace Taxys.Auth.Controllers
         [HttpPut("{id}")]
         public Task<string> PutAsync(int valueId, [FromBody]string value)
         {
-            return Task.FromResult(Dataset.GetOrAdd(valueId, value));
+            return Task.FromResult(_dataset.GetOrAdd(valueId, value));
         }
 
         // DELETE api/values/5

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Fabric;
 using System.IO;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.ServiceFabric;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
@@ -24,7 +26,7 @@ namespace Taxys.Dispatcher
         /// <returns>The collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
-            return new ServiceReplicaListener[]
+            return new[]
             {
                 new ServiceReplicaListener(serviceContext =>
                     new KestrelCommunicationListener(serviceContext, (url, listener) =>
@@ -32,16 +34,20 @@ namespace Taxys.Dispatcher
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
                         return new WebHostBuilder()
-                                    .UseKestrel()
-                                    .ConfigureServices(
-                                        services => services
-                                            .AddSingleton(serviceContext)
-                                            .AddSingleton(this.StateManager))
-                                    .UseContentRoot(Directory.GetCurrentDirectory())
-                                    .UseStartup<Startup>()
-                                    .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.UseUniqueServiceUrl)
-                                    .UseUrls(url)
-                                    .Build();
+                            .UseKestrel()
+                            .ConfigureServices(
+                                services => services
+                                    .AddSingleton(serviceContext)
+                                    .AddSingleton(StateManager)
+                                    .AddSingleton<ITelemetryInitializer>(serviceProvider =>
+                                        FabricTelemetryInitializerExtension.CreateFabricTelemetryInitializer(
+                                            serviceContext)))
+                            .UseContentRoot(Directory.GetCurrentDirectory())
+                            .UseStartup<Startup>()
+                            .UseApplicationInsights()
+                            .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.UseUniqueServiceUrl)
+                            .UseUrls(url)
+                            .Build();
                     }))
             };
         }
