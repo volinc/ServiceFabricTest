@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taxys.Gate", "Taxys.Gate\Ta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taxys.Auth", "Taxys.Auth\Taxys.Auth.csproj", "{3586C9E5-8269-4F1C-8690-60EEB05C0D3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taxys.Dispatcher", "Taxys.Dispatcher\Taxys.Dispatcher.csproj", "{B799B1F3-F37B-4361-AA76-459AA703DF18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taxys.Dispatcher", "Taxys.Dispatcher\Taxys.Dispatcher.csproj", "{B799B1F3-F37B-4361-AA76-459AA703DF18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

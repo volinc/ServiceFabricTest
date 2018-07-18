@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Binateq.JsonRestClient;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Services.Client;
@@ -23,6 +24,8 @@ namespace Taxys.Gate.Controllers
         private readonly ILogger<ValuesController> logger;
         private readonly string reverseProxyBaseUri;
 
+        private readonly TelemetryClient telemetry = new TelemetryClient();
+
         public ValuesController(HttpClient httpClient, StatelessServiceContext serviceContext, FabricClient fabricClient, ILogger<ValuesController> logger)
         {
             this.httpClient = httpClient;
@@ -36,6 +39,13 @@ namespace Taxys.Gate.Controllers
         [HttpGet]
         public async Task<IEnumerable<string>> GetAsync()
         {           
+            telemetry.TrackEvent("0 Getting all values");
+
+            var exception = new InvalidOperationException("Exception - Getting all values");
+            telemetry.TrackException(exception);
+
+            logger.LogError(exception, "Exception - message");
+
             logger.LogTrace("1 Getting all values");
             logger.LogDebug("2 Getting all values");
             logger.LogInformation("3 Getting all values");
