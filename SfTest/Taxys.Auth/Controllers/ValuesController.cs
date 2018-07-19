@@ -43,11 +43,13 @@ namespace Taxys.Auth.Controllers
         [HttpGet("{valueId}")]
         public Task<IdValue> GetAsync(int valueId)
         {
-            logger.LogError(new NotImplementedException("BlaBla"), "blabla");
+            var exception = new NotImplementedException("BlaBla");
+            throw exception;
 
-            var value = _dataset[valueId];
+            //logger.LogError(exception, "blabla");
+            //var value = _dataset[valueId];
 
-            return Task.FromResult(new IdValue { Id = valueId, Value = value });
+            //return Task.FromResult(new IdValue { Id = valueId, Value = value });
         }
 
         // POST api/values

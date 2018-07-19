@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taxys.Auth", "Taxys.Auth\Ta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taxys.Dispatcher", "Taxys.Dispatcher\Taxys.Dispatcher.csproj", "{B799B1F3-F37B-4361-AA76-459AA703DF18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{B799B1F3-F37B-4361-AA76-459AA703DF18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B799B1F3-F37B-4361-AA76-459AA703DF18}.Release|x64.ActiveCfg = Release|Any CPU
 		{B799B1F3-F37B-4361-AA76-459AA703DF18}.Release|x64.Build.0 = Release|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Debug|x64.Build.0 = Debug|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Release|x64.ActiveCfg = Release|Any CPU
+		{A9D3B4EA-3ECB-4E46-9E8A-CD547BF7CA04}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

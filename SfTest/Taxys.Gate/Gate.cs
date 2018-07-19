@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.ServiceFabric;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
@@ -44,6 +45,11 @@ namespace Taxys.Gate
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseApplicationInsights()
+                            .ConfigureAppConfiguration((hostContext, config) =>
+                            {                                        
+                                config.Sources.Clear();
+                                config.AddEnvironmentVariables();
+                            })   
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
                             .UseUrls(url)
                             .Build();
