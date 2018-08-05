@@ -6,10 +6,6 @@
     <Parameter Name="Taxys.Dispatcher_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Taxys.Auth_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Taxys.Gate_InstanceCount" DefaultValue="-1" />
-    <Parameter Name="HttpsCertThumbprint" DefaultValue="" />
-    <Parameter Name="Port" DefaultValue="80" />
-    <Parameter Name="Protocol" DefaultValue="http" />
-    <Parameter Name="Type" DefaultValue="Input" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
@@ -25,14 +21,6 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Taxys.GatePkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
-    <ResourceOverrides>
-      <Endpoints>
-        <Endpoint Name="ServiceEndpoint" Port="[Port]" Protocol="[Protocol]" Type="[Type]" />
-      </Endpoints>
-    </ResourceOverrides>
-    <Policies>
-      <EndpointBindingPolicy EndpointRef="ServiceEndpoint" CertificateRef="HttpsCert" />
-    </Policies>
   </ServiceManifestImport>
   <DefaultServices>
     <!-- The section below creates instances of service types, when an instance of this 
@@ -56,7 +44,13 @@
       </StatelessService>
     </Service>
   </DefaultServices>
-  <Certificates>
-    <EndpointCertificate X509FindValue="[HttpsCertThumbprint]" Name="HttpsCert" />
-  </Certificates>
+  <Principals>
+    <Users>
+      <User Name="SetupAdminUser">
+        <MemberOf>
+          <SystemGroup Name="Administrators" />
+        </MemberOf>
+      </User>
+    </Users>
+  </Principals>
 </ApplicationManifest>

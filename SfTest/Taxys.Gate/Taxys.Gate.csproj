@@ -27,4 +27,10 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.2.162" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Setup.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

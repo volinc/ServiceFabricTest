@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Fabric;
-using System.IO;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.ServiceFabric;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-
-namespace Taxys.Gate
+﻿namespace Taxys.Gate
 {
+    using System.Collections.Generic;
+    using System.Fabric;
+    using System.IO;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.ApplicationInsights.ServiceFabric;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+
     /// <summary>
     /// The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
@@ -31,17 +33,23 @@ namespace Taxys.Gate
             return new[]
             {
                 new ServiceInstanceListener(serviceContext =>
-                    new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
+                    new KestrelCommunicationListener(serviceContext, "EndpointHttps", (url, listener) =>
                     {
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
                         return new WebHostBuilder()
-                            .UseKestrel()
+                            .UseKestrel(opt =>
+                            {
+                                var port = serviceContext.CodePackageActivationContext.GetEndpoint("EndpointHttps").Port;
+                                opt.Listen(IPAddress.IPv6Any, port, listenOptions =>
+                                {
+                                    listenOptions.UseHttps(GetCertificateFromStore());
+                                    listenOptions.NoDelay = true;
+                                });
+                            })
                             .ConfigureServices(services => services
                                 .AddSingleton(serviceContext)
-                                .AddSingleton<ITelemetryInitializer>(serviceProvider =>
-                                    FabricTelemetryInitializerExtension.CreateFabricTelemetryInitializer(
-                                        serviceContext)))
+                                .AddSingleton<ITelemetryInitializer>(serviceProvider => FabricTelemetryInitializerExtension.CreateFabricTelemetryInitializer(serviceContext)))
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseApplicationInsights()
@@ -55,6 +63,22 @@ namespace Taxys.Gate
                             .Build();
                     }))
             };
+        }
+
+        private static X509Certificate2 GetCertificateFromStore()
+        {
+            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+                var certCollection = store.Certificates;
+                var currentCerts = certCollection.Find(X509FindType.FindBySubjectDistinguishedName, "CN=localhost", false);
+                return currentCerts.Count == 0 ? null : currentCerts[0];
+            }
+            finally
+            {
+                store.Close();
+            }
         }
     }
 }

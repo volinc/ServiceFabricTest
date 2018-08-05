@@ -12,6 +12,13 @@
 
   <!-- Code package is your service executable. -->
   <CodePackage Name="Code" Version="1.0.0">
+    <SetupEntryPoint>
+      <ExeHost>
+        <Program>Setup.bat</Program>
+        <WorkingFolder>CodePackage</WorkingFolder>
+      </ExeHost>
+    </SetupEntryPoint>
+    
     <EntryPoint>
       <ExeHost>
         <Program>Taxys.Gate.exe</Program>
@@ -29,7 +36,7 @@
       <!-- This endpoint is used by the communication listener to obtain the port on which to 
            listen. Please note that if your service is partitioned, this port is shared with 
            replicas of different partitions that are placed in your code. -->
-      <Endpoint Protocol="http" Name="ServiceEndpoint" Type="Input" Port="8185" />
+      <Endpoint Protocol="https" Name="EndpointHttps" Type="Input" Port="443" />
     </Endpoints>
   </Resources>
 </ServiceManifest>
