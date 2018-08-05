@@ -29,13 +29,6 @@ namespace Taxys.Auth
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Trace);
-            var logger = loggerFactory.CreateLogger<AuthExceptionHandler>();
-
-            app.UseExceptionHandler(new ExceptionHandlerOptions
-            {
-                ExceptionHandler = new AuthExceptionHandler(env, logger).InvokeAsync
-            });
-
 
             if (env.IsDevelopment())
             {
