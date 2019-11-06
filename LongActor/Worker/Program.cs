@@ -40,6 +40,7 @@ namespace Worker
         private static ServiceCollection ConfigureServices(IConfiguration configuration)
         {
             var services = new ServiceCollection();
+            services.AddScoped<Book>();
             return services;
         }
     }

@@ -2,9 +2,11 @@ namespace Worker
 {
     using System;
     using System.Threading.Tasks;
-    using global::Worker.Interfaces;
+    using Worker.Interfaces;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
+    using Microsoft.Extensions.DependencyInjection;
+    using System.Diagnostics;
 
     /// <remarks>
     /// This class represents an actor.
@@ -21,9 +23,12 @@ namespace Worker
         private const string CountName = "count";
         private const string ReminderName = "worker";
 
-        public WorkerActor(ActorService actorService, ActorId actorId) 
+        private readonly IServiceScopeFactory serviceScopeFactory;
+
+        public WorkerActor(ActorService actorService, ActorId actorId, IServiceScopeFactory serviceScopeFactory) 
             : base(actorService, actorId)
-        {            
+        {
+            this.serviceScopeFactory = serviceScopeFactory;
         }                
         
         protected override async Task OnActivateAsync()
@@ -37,8 +42,8 @@ namespace Worker
 
         protected override async Task OnDeactivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");            
-            await StateManager.SaveStateAsync();            
+            ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");
+            await StateManager.SaveStateAsync();
         }
 
         async Task<int> IWorkerActor.GetLongOpProgressAsync()
@@ -54,7 +59,7 @@ namespace Worker
                 return;
 
             await RegisterReminderAsync(ReminderName, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(-1));
-            await StateManager.AddOrUpdateStateAsync(StateName, true, (key, value) => true);
+            await StateManager.AddOrUpdateStateAsync(StateName, true, (key, value) => true);            
         }
                 
         async Task IWorkerActor.StopLongOnAsync()
@@ -65,6 +70,10 @@ namespace Worker
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {            
+            using var scope = serviceScopeFactory.CreateScope();
+            var book = scope.ServiceProvider.GetRequiredService<Book>();
+            Debug.WriteLine(book);
+
             await StateManager.AddOrUpdateStateAsync(CountName, 1, (key, value) => ++value);            
             await RegisterReminderAsync(ReminderName, null, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(-1));
         }        
