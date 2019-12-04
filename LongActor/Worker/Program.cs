@@ -6,7 +6,6 @@ namespace Worker
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
-    using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.ApplicationInsights.ServiceFabric;
     using Microsoft.ApplicationInsights.ServiceFabric.Module;
@@ -51,19 +50,21 @@ namespace Worker
 
             //var channel = new InMemoryChannel();
             var channel = new ServerTelemetryChannel();
+            var instrumentationKey = configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
+
             services.Configure<TelemetryConfiguration>(options =>
             {                
                 options.TelemetryChannel = channel;
-                options.TelemetryInitializers.Add(new FabricTelemetryInitializer());                
+                options.TelemetryInitializers.Add(new FabricTelemetryInitializer());
+                options.InstrumentationKey = instrumentationKey;                
             });
 
             services.AddSingleton<ITelemetryModule>(new ServiceRemotingDependencyTrackingTelemetryModule())
                     .AddSingleton<ITelemetryModule>(new ServiceRemotingRequestTrackingTelemetryModule());            
 
             services.AddLogging(options =>
-            {                
-                var instrumentationKey = configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
-                options.AddApplicationInsights(instrumentationKey)
+            {                                
+                options.AddApplicationInsights()
                        .AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
 
                 //options.AddDebug();

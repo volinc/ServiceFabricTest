@@ -35,7 +35,7 @@ namespace Worker
         
         protected override async Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            //ActorEventSource.Current.ActorMessage(this, "Actor activated.");
             logger.LogInformation("Actor activated.");            
 
             var conditionalState = await StateManager.TryGetStateAsync<bool>(StateName);
@@ -45,7 +45,7 @@ namespace Worker
 
         protected override async Task OnDeactivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");
+            //ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");
             logger.LogInformation("Actor deactivated.");        
 
             await StateManager.SaveStateAsync();
