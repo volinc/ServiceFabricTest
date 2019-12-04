@@ -1,17 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="LongActorType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="Gate_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
+    <Parameter Name="Gate_ASPNETCORE_ENVIRONMENT" DefaultValue="Development" />
     <Parameter Name="Gate_InstanceCount" DefaultValue="-1" />
     <Parameter Name="WorkerActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="WorkerActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="WorkerActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="APPINSIGHTS_INSTRUMENTATIONKEY" DefaultValue="00000000-0000-0000-0000-000000000000" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WorkerPkg" ServiceManifestVersion="1.0.0" />
+    <EnvironmentOverrides CodePackageRef="code">
+      <EnvironmentVariable Name="APPINSIGHTS_INSTRUMENTATIONKEY" Value="[APPINSIGHTS_INSTRUMENTATIONKEY]" />
+    </EnvironmentOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="GatePkg" ServiceManifestVersion="1.0.0" />
