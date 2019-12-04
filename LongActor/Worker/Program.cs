@@ -52,6 +52,14 @@ namespace Worker
             var channel = new ServerTelemetryChannel();
             var instrumentationKey = configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
 
+            //services.AddSingleton(sp =>
+            //{
+            //    var telemetryInitializer = sp.GetRequiredService<ITelemetryInitializer>();
+            //    var telemetryConfiguration = new TelemetryConfiguration(instrumentationKey);
+            //    telemetryConfiguration.TelemetryInitializers.Add(telemetryInitializer);
+            //    return telemetryConfiguration;
+            //});
+
             services.Configure<TelemetryConfiguration>(options =>
             {                
                 options.TelemetryChannel = channel;
