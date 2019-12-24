@@ -6,7 +6,7 @@ namespace Worker
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
     using Microsoft.Extensions.DependencyInjection;
-    using System.Diagnostics;
+    using Microsoft.Extensions.Logging;
 
     /// <remarks>
     /// This class represents an actor.
@@ -24,16 +24,19 @@ namespace Worker
         private const string ReminderName = "worker";
 
         private readonly IServiceScopeFactory serviceScopeFactory;
-
-        public WorkerActor(ActorService actorService, ActorId actorId, IServiceScopeFactory serviceScopeFactory) 
+        private readonly ILogger<WorkerActor> logger;
+        
+        public WorkerActor(ActorService actorService, ActorId actorId, IServiceScopeFactory serviceScopeFactory, ILogger<WorkerActor> logger) 
             : base(actorService, actorId)
         {
             this.serviceScopeFactory = serviceScopeFactory;
-        }
+            this.logger = logger;
+        }                
         
         protected override async Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            //ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            logger.LogInformation("Actor activated.");            
 
             var conditionalState = await StateManager.TryGetStateAsync<bool>(StateName);
             if (conditionalState.HasValue && conditionalState.Value)
@@ -42,7 +45,9 @@ namespace Worker
 
         protected override async Task OnDeactivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");
+            //ActorEventSource.Current.ActorMessage(this, "Actor deactivated.");
+            logger.LogInformation("Actor deactivated.");        
+
             await StateManager.SaveStateAsync();
         }
 
@@ -72,7 +77,9 @@ namespace Worker
         {            
             using var scope = serviceScopeFactory.CreateScope();
             var book = scope.ServiceProvider.GetRequiredService<Book>();
-            Debug.WriteLine(book);
+            
+            var message = book.ToString();
+            logger.LogInformation(message);
 
             await StateManager.AddOrUpdateStateAsync(CountName, 1, (key, value) => ++value);            
             await RegisterReminderAsync(ReminderName, null, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(-1));

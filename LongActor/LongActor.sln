@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "LongActor", "LongActor\LongActor.sfproj", "{6D19FE34-1FF6-4C73-B38C-365F9A3BB76F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gate", "Gate\Gate.csproj", "{09537B20-1220-4ADF-B8D9-AA15855ABAC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gate", "Gate\Gate.csproj", "{09537B20-1220-4ADF-B8D9-AA15855ABAC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Worker\Worker.csproj", "{43A496D4-D279-4D0F-8218-D0FFC5FE6119}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "Worker\Worker.csproj", "{43A496D4-D279-4D0F-8218-D0FFC5FE6119}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker.Interfaces", "Worker.Interfaces\Worker.Interfaces.csproj", "{9F573F7A-8CFD-4DAF-8BDB-B4DB29B4FBC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker.Interfaces", "Worker.Interfaces\Worker.Interfaces.csproj", "{9F573F7A-8CFD-4DAF-8BDB-B4DB29B4FBC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
