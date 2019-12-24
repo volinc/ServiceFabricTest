@@ -29,7 +29,7 @@ namespace Worker
             : base(actorService, actorId)
         {
             this.serviceScopeFactory = serviceScopeFactory;
-        }                
+        }
         
         protected override async Task OnActivateAsync()
         {
